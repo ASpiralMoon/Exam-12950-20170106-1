@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ts.exam.dao.IFilmDao">
+
+    <resultMap id="FilmResultMap" type="com.ts.exam.entity.Film">
+        <id column="film_id" property="filmId" jdbcType="SMALLINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="language_id" property="languageId" jdbcType="TINYINT"/>
+        <association property="language" javaType="com.ts.exam.entity.Language">
+            <id column="l_id" property="languageId" jdbcType="TINYINT"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <!--根据条件查询film-->
+    <select id="queryFilmInfoByParams" resultMap="FilmResultMap">
+        select
+        film_id,
+        title,
+        description,
+        f.language_id,
+        l.language_id l_id,
+        name
+        from film f
+        join language l
+        on f.language_id = l.language_id
+        <where>
+            <if test="filmId != null">
+                and film_id = #{filmId}
+            </if>
+            <if test="title != null and !&quot;&quot;.equals(title.trim())">
+                and upper(title) regexp #{title}
+            </if>
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                and upper(description) regexp #{description}
+            </if>
+        </where>
+        order by film_id
+        limit #{offset} , #{size}
+    </select>
+
+    <!--查询数据总数-->
+    <select id="queryTotalCount" resultType="INTEGER">
+       select
+       count(1)
+       from  film
+    </select>
+
+
+    <!--查询数据总数2-->
+    <select id="queryTotalByFilm"  parameterType="com.ts.exam.entity.Film" resultType="INTEGER">
+       select
+       count(1)
+       from  film WHERE 1=1
+        <if test="title != null and !&quot;&quot;.equals(title.trim())">
+            and upper(title) regexp #{title}
+        </if>
+        <if test="description != null and !&quot;&quot;.equals(description.trim())">
+            and upper(description) regexp #{description}
+        </if>
+    </select>
+
+    <!--单条增加film-->
+    <insert id="addOneFilm" parameterType="com.ts.exam.entity.Film" useGeneratedKeys="true" keyProperty="filmId">
+        insert into film
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            title,
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                description,
+            </if>
+            <if test="languageId != null">
+                language_id,
+            </if>
+        </trim>
+        <trim prefix="value(" suffix=")" suffixOverrides=",">
+            #{title},
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                #{description},
+            </if>
+            <if test="languageId != null">
+                #{languageId},
+            </if>
+        </trim>
+    </insert>
+
+    <!--单条编辑film-->
+    <update id="editOneFilm" parameterType="com.ts.exam.entity.Film">
+        update film
+        <set>
+            <if test="title != null and !&quot;&quot;.equals(title.trim())">
+                title = #{title},
+            </if>
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                description = #{description},
+            </if>
+            <if test="languageId != null">
+                language_id = #{languageId},
+            </if>
+        </set>
+        <where>
+            film_id = #{filmId}
+        </where>
+    </update>
+
+    <!--单条删除film-->
+    <delete id="delOneFilm" parameterType="SHORT">
+        delete from film
+        <where>
+            film_id = #{filmId}
+        </where>
+    </delete>
+
+
+</mapper>

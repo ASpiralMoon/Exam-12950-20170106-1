@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ts.exam.dao.ICustomerDao">
+
+    <resultMap id="CustomerResultMap" type="com.ts.exam.entity.Customer">
+        <result column="first_name" property="firstName" jdbcType="VARCHAR"/>
+        <result column="last_name" property="lastName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--根据firstName和lastName检查用户是否存在-->
+    <select id="checkCustomer" resultMap="CustomerResultMap" parameterType="com.ts.exam.entity.Customer">
+        select
+        first_name,
+        last_name
+        from customer
+        <where>
+            first_name = #{firstName}
+            and last_name = #{lastName}
+        </where>
+    </select>
+</mapper>

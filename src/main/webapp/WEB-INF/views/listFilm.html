@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表显示页面</title>
+    <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../../static/sweetalert-master/dist/sweetalert.css">
+    <script src="../../static/jquery/jquery-3.1.1.min.js"></script>
+    <script src="../../static/bootstrap/js/bootstrap.js"></script>
+    <script src="../../static/sweetalert-master/dist/sweetalert.min.js"></script>
+    <script src="../../static/bootstrap-paginator/bootstrap-paginator.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei UI", sans-serif;
+        }
+
+        #form {
+            margin: 10px auto;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .input-group {
+            width: 80%;
+            margin: 15px auto;
+        }
+
+        #pagination li {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="form">
+        <div class="input-group">
+            <div class="col-xs-4">
+                <input type="text" class="form-control title" placeholder="标题">
+            </div>
+            <div class="col-xs-4">
+                <input type="text" class="form-control description" placeholder="描述">
+            </div>
+            <div class="col-xs-2">
+                <input type="button" style="width:100px;" id="query-btn" class="btn btn-info btn-block" value="查 询">
+            </div>
+            <div class="col-xs-2">
+                <input type="button" style="width:100px;" id="add-btn" class="btn btn-primary btn-block"
+                       data-target="#addModel" value="新 增">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" style="min-height: 400px;">
+    <table class="table table-hover table-striped table-responsive table-bordered table-hover">
+        <tr class="tr-first">
+            <th>编号</th>
+            <th>标题</th>
+            <th>描述</th>
+            <th>语言</th>
+            <th>操作</th>
+        </tr>
+    </table>
+</div>
+<div>
+    <div class="container-fluid">
+        <div class="col-xs-4">
+        </div>
+        <div class="col-xs-4">
+            <div id="pagination">
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="col-xs-6">
+                <div class="input-group" style="margin-top: 19px;">
+                    <span class="input-group-addon">数量</span>
+                    <select class="form-control" name="size" id="size">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="col-xs-6" style="margin-top: 18px;">
+                <div class="col-xs-6">
+                    <input type="text" style="width:100px;" class="form-control col-xs-6 col-sm-3 current"
+                           placeholder="页码">
+                </div>
+                <div class="col-xs-6">
+                    <input type="button" id="jump-btn" style="width:60px;"
+                           class="btn btn-primary col-xs-6 col-sm-3" value="跳 转">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="updateModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">详情页</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-xs-6">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">标题</span>
+                        <input type="text" class="form-control title_input" placeholder="标题">
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">语言</span>
+                        <select name="language_input" class="form-control" id="language_input">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">描述</span>
+                        <textarea name="description_input" class="form-control" id="description_input"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-update">提交更改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="addModelLabel">新增页</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-xs-6">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">标题</span>
+                        <input type="text" class="form-control addModel_title_input" placeholder="标题">
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">语言</span>
+                        <select name="language_input" class="form-control" id="addModel_language_input">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">描述</span>
+                        <textarea name="description_input" class="form-control"
+                                  id="addModel_description_input"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-add">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+
+        // 全局属性
+        var TITLE, DESCRIPTION, FILMID, LANGUAGE;
+
+        //获取语言
+        getLanguages();
+
+        //初始化电影数据
+        getFilm({title: "", description: "", current: 1, size: 10});
+
+        //更新电影数据
+        changeFilm("update", "/listFilmController/edit", {success: "更新成功", error: "更新失败"}, ".btn-update");
+
+        //新增电影数据
+        changeFilm("insert", "/listFilmController/add", {success: "新增成功", error: "新增失败"}, ".btn-add");
+
+        //跳转分页
+        jumpPage();
+
+        //数量改变动态改变分页数量
+        changeNumber();
+
+        //查询按钮查询电影
+        btnQuery();
+
+        // 查询电影数据并设置分页
+        function getFilm(obj) {
+            $.ajax({
+                type: "POST",
+                url: "/listFilmController/query",
+                dataType: "json",
+                data: obj,
+                success: function (data) {
+                    TOTALCOUNT = data.total;
+                    $("table").find("tr:not(.tr-first)").remove();
+                    var htmlStr = "";
+                    $.each(data.films, function (key, val) {
+                        htmlStr += "<tr><td>" + val.filmId + "</td>"
+                            + "<td>" + val.title + "</td>"
+                            + "<td>" + val.description + "</td>"
+                            + "<td data-id=" + val.language.languageId + ">" + val.language.name + "</td>"
+                            + "<td><button class='btn btn-primary btn-edit' >编辑</button>" +
+                            "<button class='btn btn-danger btn-delete' data-id=" + val.filmId + ">删除</button></td></tr>";
+                    });
+                    $(".tr-first").after(htmlStr);
+                    $(".btn-delete").on("click", function () {
+                        $.ajax({
+                            url: "/listFilmController/delete?filmId=" + $(this).attr("data-id"),
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "GET",
+                            success: function (data) {
+                                if (data.msg) {
+                                    swal({
+                                        title: "删除成功",
+                                        type: "success",
+                                    }, function () {
+                                        location.reload();
+                                    });
+                                } else {
+                                    swal({
+                                        title: "删除失败",
+                                        text: "该数据存在关联属性,无法删除",
+                                        type: "error",
+                                    }, function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    // 将数据铺进编辑框
+                    $(".btn-edit").on("click", function () {
+                        TITLE = $(this).parents("tr").find("td").eq(1).text();
+                        DESCRIPTION = $(this).parents("tr").find("td").eq(2).text();
+                        LANGUAGE = $(this).parents("tr").find("td").eq(3).attr("data-id");
+                        FILMID = $(this).parents("tr").find("td").eq(0).text();
+                        $(".title_input").val(TITLE);
+                        $("#language_input").val(LANGUAGE);
+                        $("#description_input").val(DESCRIPTION);
+                        $("#updateModel").modal('show');
+                    });
+                    $("#add-btn").on("click", function () {
+                        $("#addModel").modal('show');
+                    });
+                    //设置分页
+                    getPage(data.currentPage, Math.ceil(data.total / $("#size").val()));
+                }
+            });
+        }
+
+        // 查询按钮查询电影
+        function btnQuery() {
+            $("#query-btn").on("click", function () {
+                var dataJson = {
+                    title: $(".title").val() || "",
+                    description: $(".description").val() || "",
+                    current: 1,
+                    size: $("#size").val() || 10
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/listFilmController/query",
+                    dataType: "json",
+                    data: dataJson,
+                    success: function (data) {
+                        $("table").find("tr:not(.tr-first)").remove();
+                        var htmlStr = "";
+                        $.each(data.films, function (key, val) {
+                            htmlStr += "<tr><td>" + val.filmId + "</td>"
+                                + "<td>" + val.title + "</td>"
+                                + "<td>" + val.description + "</td>"
+                                + "<td data-id=" + val.language.languageId + ">" + val.language.name + "</td>"
+                                + "<td><button class='btn btn-primary btn-edit' >编辑</button>" +
+                                "<button class='btn btn-danger btn-delete' data-id=" + val.filmId + ">删除</button></td></tr>";
+                        });
+                        $(".tr-first").after(htmlStr);
+                        $(".btn-delete").on("click", function () {
+                            $.ajax({
+                                url: "/listFilmController/delete?filmId=" + $(this).attr("data-id"),
+                                contentType: "application/json",
+                                dataType: "json",
+                                type: "GET",
+                                success: function (data) {
+                                    if (data.msg) {
+                                        swal({
+                                            title: "删除成功",
+                                            type: "success",
+                                        }, function () {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "删除失败",
+                                            text: "该数据存在关联属性,无法删除",
+                                            type: "error",
+                                        }, function () {
+                                            location.reload();
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                        // 将数据铺进编辑框
+                        $(".btn-edit").on("click", function () {
+                            TITLE = $(this).parents("tr").find("td").eq(1).text();
+                            DESCRIPTION = $(this).parents("tr").find("td").eq(2).text();
+                            LANGUAGE = $(this).parents("tr").find("td").eq(3).attr("data-id");
+                            FILMID = $(this).parents("tr").find("td").eq(0).text();
+                            $(".title_input").val(TITLE);
+                            $("#language_input").val(LANGUAGE);
+                            $("#description_input").val(DESCRIPTION);
+                            $("#updateModel").modal('show');
+                        });
+                        $("#add-btn").on("click", function () {
+                            $("#addModel").modal('show');
+                        });
+                        //设置分页属性
+                        getPage(1, Math.ceil(data.total / $("#size").val()));
+                    }
+                });
+            });
+        }
+
+        // ajax更新分页组建
+        function getPage(currentPage, totalPages) {
+            if (totalPages != 0) {
+                $("#size").removeAttr("disabled");
+                $("#jump-btn").removeAttr("disabled");
+                //设置分页属性
+                $("#pagination").bootstrapPaginator({
+                    currentPage: currentPage,
+                    totalPages: totalPages,
+                    numberOfPages: 5,
+                    alignment: "center",
+                    pageUrl: function (type, page, current) {
+                    },
+                    onPageClicked: function (event, originalEvent, type, page) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/listFilmController/query",
+                            dataType: "json",
+                            data: {
+                                current: page || 1,
+                                size: $("#size").val(),
+                                title: $(".title").val() || "",
+                                description: $(".description").val() || ""
+                            },
+                            success: function (data) {
+                                $("table").find("tr:not(.tr-first)").remove();
+                                var htmlStr = "";
+                                $.each(data.films, function (key, val) {
+                                    htmlStr += "<tr><td>" + val.filmId + "</td>"
+                                        + "<td>" + val.title + "</td>"
+                                        + "<td>" + val.description + "</td>"
+                                        + "<td data-id=" + val.language.languageId + ">" + val.language.name + "</td>"
+                                        + "<td><button class='btn btn-primary btn-edit' >编辑</button>" +
+                                        "<button class='btn btn-danger btn-delete' data-id=" + val.filmId + ">删除</button></td></tr>";
+                                });
+                                $(".tr-first").after(htmlStr);
+                                $(".btn-delete").on("click", function () {
+                                    $.ajax({
+                                        url: "/listFilmController/delete?filmId=" + $(this).attr("data-id"),
+                                        contentType: "application/json",
+                                        dataType: "json",
+                                        type: "GET",
+                                        success: function (data) {
+                                            if (data.msg) {
+                                                swal({
+                                                    title: "删除成功",
+                                                    type: "success",
+                                                }, function () {
+                                                    location.reload();
+                                                });
+                                            } else {
+                                                swal({
+                                                    title: "删除失败",
+                                                    text: "该数据存在关联属性,无法删除",
+                                                    type: "error",
+                                                }, function () {
+                                                    location.reload();
+                                                });
+                                            }
+                                        }
+                                    });
+                                });
+                                // 将数据铺进编辑框
+                                $(".btn-edit").on("click", function () {
+                                    TITLE = $(this).parents("tr").find("td").eq(1).text();
+                                    DESCRIPTION = $(this).parents("tr").find("td").eq(2).text();
+                                    LANGUAGE = $(this).parents("tr").find("td").eq(3).attr("data-id");
+                                    FILMID = $(this).parents("tr").find("td").eq(0).text();
+                                    $(".title_input").val(TITLE);
+                                    $("#language_input").val(LANGUAGE);
+                                    $("#description_input").val(DESCRIPTION);
+                                    $("#updateModel").modal('show');
+                                });
+                                $("#add-btn").on("click", function () {
+                                    $("#addModel").modal('show');
+                                });
+                            }
+                        });
+
+                    }
+                });
+                $("#pagination").show();
+            } else {
+                $("#pagination").hide();
+            }
+        }
+
+        // ajax获得电影数据
+        function ajaxGetFilm(data) {
+            $.ajax({
+                type: "POST",
+                url: "/listFilmController/query",
+                dataType: "json",
+                data: data,
+                success: function (data) {
+                    $("table").find("tr:not(.tr-first)").remove();
+                    var htmlStr = "";
+                    $.each(data.films, function (key, val) {
+                        htmlStr += "<tr><td>" + val.filmId + "</td>"
+                            + "<td>" + val.title + "</td>"
+                            + "<td>" + val.description + "</td>"
+                            + "<td data-id=" + val.language.languageId + ">" + val.language.name + "</td>"
+                            + "<td><button class='btn btn-primary btn-edit' >编辑</button>" +
+                            "<button class='btn btn-danger btn-delete' data-id=" + val.filmId + ">删除</button></td></tr>";
+                    });
+                    $(".tr-first").after(htmlStr);
+                    $(".btn-delete").on("click", function () {
+                        $.ajax({
+                            url: "/listFilmController/delete?filmId=" + $(this).attr("data-id"),
+                            contentType: "application/json",
+                            dataType: "json",
+                            type: "GET",
+                            success: function (data) {
+                                if (data.msg) {
+                                    swal({
+                                        title: "删除成功",
+                                        type: "success"
+                                    }, function () {
+                                        location.reload();
+                                    });
+                                } else {
+                                    swal({
+                                        title: "删除失败",
+                                        text: "该数据存在关联属性,无法删除",
+                                        type: "error"
+                                    }, function () {
+                                        location.reload();
+                                    });
+                                }
+                            }
+                        });
+                    });
+                    // 将数据铺进编辑框
+                    $(".btn-edit").on("click", function () {
+                        TITLE = $(this).parents("tr").find("td").eq(1).text();
+                        DESCRIPTION = $(this).parents("tr").find("td").eq(2).text();
+                        LANGUAGE = $(this).parents("tr").find("td").eq(3).attr("data-id");
+                        FILMID = $(this).parents("tr").find("td").eq(0).text();
+                        $(".title_input").val(TITLE);
+                        $("#language_input").val(LANGUAGE);
+                        $("#description_input").val(DESCRIPTION);
+                        $("#updateModel").modal('show');
+                    });
+                    $("#add-btn").on("click", function () {
+                        $("#addModel").modal('show');
+                    });
+                }
+            });
+        }
+
+        // 获取语言
+        function getLanguages() {
+            $.ajax({
+                type: "POST",
+                url: "/listFilmController/query",
+                dataType: "json",
+                data: {filmId: 1},
+                success: function (data) {
+                    var htmlStr = "";
+                    $.each(data.languages, function (key, val) {
+                        htmlStr += "<option value=" + val.languageId + ">" + val.name + "</option>";
+                    });
+                    $("#language_input").append(htmlStr);
+                    $("#addModel_language_input").append(htmlStr);
+                }
+            });
+        }
+
+        // 改变电影数据(新增或更新)
+        function changeFilm(flag, url, info, btn) {
+            $(btn).on("click", function () {
+                var obj;
+                if (flag == "update") {
+                    obj = JSON.stringify({
+                        filmId: FILMID,
+                        title: $(".title_input").val(),
+                        description: $("#description_input").val(),
+                        languageId: $("#language_input").val()
+                    });
+                } else if (flag == "insert") {
+                    obj = JSON.stringify({
+                        title: $(".addModel_title_input").val(),
+                        description: $("#addModel_description_input").val(),
+                        languageId: $("#addModel_language_input").val()
+                    })
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: obj,
+                    success: function (data) {
+                        if (data.msg) {
+                            swal({
+                                title: info.success,
+                                type: "success"
+                            }, function () {
+                                location.reload();
+                            });
+                        } else {
+                            swal({
+                                title: info.error,
+                                type: "error"
+                            }, function () {
+                                location.reload();
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        //跳转分页
+        function jumpPage() {
+            $("#jump-btn").click(function () {
+                try {
+                    var currentPage = $(".current").val();
+                    var totalPages = Math.ceil(TOTALCOUNT / $("#size").val());
+                    getPage(currentPage, totalPages);
+                    var data = {
+                        current: $(".current").val(),
+                        size: $("#size").val(),
+                        title: $(".title").val() || "",
+                        description: $(".description").val() || ""
+                    };
+                    ajaxGetFilm(data);
+                } catch (e) {
+                    swal(e);
+                }
+            });
+        }
+
+        //改变数量
+        function changeNumber() {
+            $("#size").change(function () {
+                $(".current").val("");
+                $("#pagination").bootstrapPaginator({
+                    currentPage: 1,
+                    alignment: "center",
+                    totalPages: Math.ceil(TOTALCOUNT / $("#size").val()),
+                    numberOfPages: 5
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/listFilmController/query",
+                    dataType: "json",
+                    data: {
+                        title: $(".title").val() || "",
+                        description: $(".description").val() || "",
+                        current: 1,
+                        size: $("#size").val()
+                    },
+                    success: function (data) {
+                        $("table").find("tr:not(.tr-first)").remove();
+                        var htmlStr = "";
+                        $.each(data.films, function (key, val) {
+                            htmlStr += "<tr><td>" + val.filmId + "</td>"
+                                + "<td>" + val.title + "</td>"
+                                + "<td>" + val.description + "</td>"
+                                + "<td data-id=" + val.language.languageId + ">" + val.language.name + "</td>"
+                                + "<td><button class='btn btn-primary btn-edit' >编辑</button>" +
+                                "<button class='btn btn-danger btn-delete' data-id=" + val.filmId + ">删除</button></td></tr>";
+                        });
+                        $(".tr-first").after(htmlStr);
+                        $(".btn-delete").on("click", function () {
+                            $.ajax({
+                                url: "/listFilmController/delete?filmId=" + $(this).attr("data-id"),
+                                contentType: "application/json",
+                                dataType: "json",
+                                type: "GET",
+                                success: function (data) {
+                                    if (data.msg) {
+                                        swal({
+                                            title: "删除成功",
+                                            type: "success",
+                                        }, function () {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "删除失败",
+                                            text: "该数据存在关联属性,无法删除",
+                                            type: "error",
+                                        }, function () {
+                                            location.reload();
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                        // 将数据铺进编辑框
+                        $(".btn-edit").on("click", function () {
+                            TITLE = $(this).parents("tr").find("td").eq(1).text();
+                            DESCRIPTION = $(this).parents("tr").find("td").eq(2).text();
+                            LANGUAGE = $(this).parents("tr").find("td").eq(3).attr("data-id");
+                            FILMID = $(this).parents("tr").find("td").eq(0).text();
+                            $(".title_input").val(TITLE);
+                            $("#language_input").val(LANGUAGE);
+                            $("#description_input").val(DESCRIPTION);
+                            $("#updateModel").modal('show');
+                        });
+                        $("#add-btn").on("click", function () {
+                            $("#addModel").modal('show');
+                        });
+                        //设置分页属性
+
+                        getPage(data.current, Math.ceil(data.total / $("#size").val()));
+                    }
+                });
+            });
+        }
+    });
+</script>
+</html>

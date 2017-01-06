@@ -1,0 +1,41 @@
+{
+  "name": "bootstrap-paginator",
+  "version": "1.0.2",
+  "description": "Shim port of Bootstrap-Paginator for NPM",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lyonlai/bootstrap-paginator.git"
+  },
+  "main": "bootstrap-paginator.js",
+  "bugs": {
+    "url": "https://github.com/lyonlai/bootstrap-paginator/issues"
+  },
+  "homepage": "https://github.com/lyonlai/bootstrap-paginator",
+  "_id": "bootstrap-paginator@1.0.2",
+  "scripts": {},
+  "_shasum": "a39d600bc7453f1b959c5dfce2d0e8e48eb6a1de",
+  "_from": "bootstrap-paginator@latest",
+  "_npmVersion": "2.7.5",
+  "_nodeVersion": "0.12.2",
+  "_npmUser": {
+    "name": "swillard",
+    "email": "stevewillard@gmail.com"
+  },
+  "dist": {
+    "shasum": "a39d600bc7453f1b959c5dfce2d0e8e48eb6a1de",
+    "size": 4323,
+    "noattachment": false,
+    "tarball": "http://r.cnpmjs.org/bootstrap-paginator/download/bootstrap-paginator-1.0.2.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "swillard",
+      "email": "stevewillard@gmail.com"
+    }
+  ],
+  "directories": {},
+  "publish_time": 1434654976086,
+  "_cnpm_publish_time": 1434654976086,
+  "_resolved": "http://r.cnpmjs.org/bootstrap-paginator/download/bootstrap-paginator-1.0.2.tgz",
+  "readme": "ERROR: No README data found!"
+}

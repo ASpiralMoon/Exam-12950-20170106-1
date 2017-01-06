@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ts.exam.dao.ILanguageDao">
+
+    <resultMap id="LanguageResultMap" type="com.ts.exam.entity.Language">
+        <id column="l_id" property="languageId" jdbcType="TINYINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryAllLanguage" resultMap="LanguageResultMap">
+        select
+        language_id l_id,
+        name
+        from language
+    </select>
+</mapper>
