@@ -38,3 +38,9 @@ SSM+Javascrip+bootstrap
 
 *user=root
 *password=root
+
+# 6.运行方法
+1.进入项目目录
+2.打开命令窗口
+3.运行mvn war:war
+4.运行mvn jetty:run
